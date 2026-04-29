@@ -2,7 +2,20 @@ from langflow.custom import Component
 from langflow.inputs import MessageInput, StrInput
 from langflow.template import Output
 from langflow.schema import Data, Message
+import os
 import requests
+
+
+# Tenta carregar .env (opcional)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except Exception:
+    # Se python-dotenv não estiver instalado, apenas segue (vai usar variáveis de ambiente do SO)
+    pass
+
+# Lê a variável de ambiente (nome: API_GATEWAY_URL)
+API_GATEWAY_URL = os.getenv("AWS_API_GATEWAY_URL")
 
 class AWSConnector(Component):
     display_name = "AWS API Connector"
@@ -12,7 +25,7 @@ class AWSConnector(Component):
         StrInput(
             name="api_url",
             display_name="API Gateway URL",
-            value="https://vbrnfx8dni.execute-api.us-east-1.amazonaws.com/pro/leads"
+            value=API_GATEWAY_URL or ""
         ),
         MessageInput(
             name="lead_data",
