@@ -1,21 +1,39 @@
-from langflow.interface.custom.custom_component import CustomComponent
-from langflow.field_typing import Data
+from langflow.custom import Component
+from langflow.inputs import MessageInput, StrInput
+from langflow.template import Output
+from langflow.schema import Data, Message
 import requests
 
-class AWSIntegrationComponent(CustomComponent):
+class AWSConnector(Component):
     display_name = "AWS API Connector"
-    description = "Envia dados do agente para o AWS API Gateway."
+    description = "Envia dados para AWS Lambda"
 
-    def build_config(self):
-        return {
-            "url": {"display_name": "API Gateway URL", "value": "https://sua-api.execute-api.aws.com/prod/leads"},
-            "payload": {"display_name": "Dados do Lead (JSON)", "multiline": True},
-        }
+    inputs = [
+        StrInput(
+            name="api_url",
+            display_name="API Gateway URL",
+            value="https://vbrnfx8dni.execute-api.us-east-1.amazonaws.com/pro/leads"
+        ),
+        MessageInput(
+            name="lead_data",
+            display_name="Dados do Lead"
+        )
+    ]
 
-    def build(self, url: str, payload: Data) -> Data:
+    outputs = [
+        Output(display_name="Message", name="message", method="build_output")
+    ]
+
+    def build_output(self) -> Message:
+        url = self.api_url
+        lead_data = self.lead_data
+        texto = lead_data.text if hasattr(lead_data, 'text') else str(lead_data)
+
+        # Envia para AWS em background
         try:
-            response = requests.post(url, json=payload.data)
-            response.raise_for_status()
-            return Data(value=response.json())
-        except Exception as e:
-            return Data(value={"error": str(e)})
+            requests.post(url, json={"lead_info": texto}, timeout=10)
+        except Exception:
+            pass
+
+        # Retorna o texto original do OpenAI para o Chat Output
+        return Message(text=texto)
