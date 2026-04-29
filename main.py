@@ -1,20 +1,16 @@
 from langflow.custom import Component
 from langflow.inputs import MessageInput, StrInput
 from langflow.template import Output
-from langflow.schema import Data, Message
+from langflow.schema import Message
 import os
 import requests
 
-
-# Tenta carregar .env (opcional)
 try:
     from dotenv import load_dotenv
     load_dotenv()
 except Exception:
-    # Se python-dotenv não estiver instalado, apenas segue (vai usar variáveis de ambiente do SO)
     pass
 
-# Lê a variável de ambiente (nome: API_GATEWAY_URL)
 API_GATEWAY_URL = os.getenv("AWS_API_GATEWAY_URL")
 
 class AWSConnector(Component):
@@ -38,15 +34,24 @@ class AWSConnector(Component):
     ]
 
     def build_output(self) -> Message:
-        url = self.api_url
+        url = self.api_url or os.getenv("AWS_API_GATEWAY_URL", "")
+        api_key = os.getenv("AWS_API_GATEWAY_KEY", "")
+        
         lead_data = self.lead_data
         texto = lead_data.text if hasattr(lead_data, 'text') else str(lead_data)
 
-        # Envia para AWS em background
         try:
-            requests.post(url, json={"lead_info": texto}, timeout=10)
-        except Exception:
-            pass
+            headers = {
+                "Content-Type": "application/json",
+                "x-api-key": api_key
+            }
+            response = requests.post(url, json={"lead_info": texto}, headers=headers, timeout=10)
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            print(f"AWS HTTP error: {e.response.status_code}")
+        except requests.exceptions.Timeout:
+            print("AWS timeout")
+        except Exception as e:
+            print(f"AWS error: {str(e)}")
 
-        # Retorna o texto original do OpenAI para o Chat Output
         return Message(text=texto)
