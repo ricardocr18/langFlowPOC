@@ -36,9 +36,13 @@ class AWSConnector(Component):
     def build_output(self) -> Message:
         url = self.api_url or os.getenv("AWS_API_GATEWAY_URL", "")
         api_key = os.getenv("AWS_API_GATEWAY_KEY", "")
-        
+
         lead_data = self.lead_data
         texto = lead_data.text if hasattr(lead_data, 'text') else str(lead_data)
+
+        # Guardrail: só envia para AWS se o Agent respondeu com APROVAR:
+        if "APROVAR:" not in texto.upper():
+            return Message(text="⏸ AWS não acionado — aguardando aprovação humana.")
 
         try:
             headers = {
@@ -47,11 +51,10 @@ class AWSConnector(Component):
             }
             response = requests.post(url, json={"lead_info": texto}, headers=headers, timeout=10)
             response.raise_for_status()
+            return Message(text=f"✅ Lead enviado para AWS com sucesso!\n\n{texto}")
         except requests.exceptions.HTTPError as e:
-            print(f"AWS HTTP error: {e.response.status_code}")
+            return Message(text=f"❌ Erro HTTP AWS: {e.response.status_code}")
         except requests.exceptions.Timeout:
-            print("AWS timeout")
+            return Message(text="❌ Timeout ao conectar com AWS.")
         except Exception as e:
-            print(f"AWS error: {str(e)}")
-
-        return Message(text=texto)
+            return Message(text=f"❌ Erro AWS: {str(e)}")
