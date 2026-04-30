@@ -1,0 +1,5 @@
+invalid type: string "Nome: Ana Souza\nCargo: Engenheira de Dados\nExperiência: 5 anos em PySpark, Airflow, dbt, Redshift, Snowflake.\nInteresse: Pipelines de dados e engenharia analítica.\nDisponibilidade: 30 dias", expected f64ocation"]["options"] = updated_options
+
+        # Handle storage location selection
+        if field_name == "storage_location":
+            # Extract selected storage l
