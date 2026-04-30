@@ -1,0 +1,5 @@
+Nome: Julia Ferreira
+Cargo: AI/ML Engineer
+Experiência: 4 anos em Python, LangChain, OpenAI API, RAG, fine-tuning de LLMs.
+Interesse: Agentes de IA, LLMOps e automação inteligente.
+Disponibilidade: Imediata

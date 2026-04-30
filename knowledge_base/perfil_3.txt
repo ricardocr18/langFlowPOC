@@ -1,0 +1,5 @@
+Nome: Pedro Mendes
+Cargo: Desenvolvedor Java Full Stack
+Experiência: 6 anos em Java Spring Boot, React, Kubernetes, CI/CD.
+Interesse: Arquitetura de microsserviços e DevOps.
+Disponibilidade: Imediata

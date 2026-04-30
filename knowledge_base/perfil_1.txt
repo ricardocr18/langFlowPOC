@@ -1,0 +1,5 @@
+Nome: Carlos Silva
+Cargo: Desenvolvedor Python Sênior
+Experiência: 8 anos em Python, FastAPI, Django, AWS Lambda, PostgreSQL.
+Interesse: Projetos de automação e APIs escaláveis em cloud.
+Disponibilidade: Imediata

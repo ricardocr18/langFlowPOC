@@ -1,0 +1,5 @@
+Nome: Ana Souza
+Cargo: Engenheira de Dados
+Experiência: 5 anos em PySpark, Airflow, dbt, Redshift, Snowflake.
+Interesse: Pipelines de dados e engenharia analítica.
+Disponibilidade: 30 dias
